@@ -64,7 +64,7 @@ def browser_extractor(browser_fingerprint):
     
     if len(browser_info) == 3:
         browser_version = browser_info[1].split('.')
-        browser_version = browser_version[0] + '.' + ''.join([x.ljust(3, '0') for x in browser_version[1:]])
+        browser_version = browser_version[0] + '.' + ''.join([x.ljust(3, '0')[:3] for x in browser_version[1:]])
         
         output = {
             'browser_name': browser_info[0],
