@@ -4,13 +4,13 @@ from torch import nn
 
 class ProfileClassifier(nn.Module):
     """
-    
+    Fully connected network mapping demographic data into psychological profile
     """
     def __init__(self, input_size, output_size):
         """
         Architecture initialization
-        :param out_class_num: number of output classes
-        :param hidden_size: size of hidden layer
+        :param input_size: number of input features
+        :param output_size: number of output features
         """
         super(ProfileClassifier, self).__init__()
 
@@ -22,13 +22,13 @@ class ProfileClassifier(nn.Module):
         self.fc3 = nn.Linear(32, 16)
         self.fc4 = nn.Linear(16, output_size)
         self.relu = nn.ReLU()
-        self.dropout1 = nn.Dropout(0.3)
+        self.dropout1 = nn.Dropout(0.35)
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Forward pass function
         :param x: input X tensor
-        :return: tensor with prediction logits
+        :return: tensor (1D) with psychological profile
         """
         output = self.fc1(x)
         output = self.relu(output)

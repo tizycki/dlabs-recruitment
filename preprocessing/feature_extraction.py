@@ -4,25 +4,43 @@ import pandas as pd
 import datetime
 from sklearn.base import BaseEstimator, TransformerMixin
 
+
 class FeatureExtractor(BaseEstimator, TransformerMixin):
     """
-    TODO:
+    Transformer to extract features from browser's fingerprint and age from DOB.
     """
-    
-    def __init__(self, n_jobs=-1):
+    def __init__(self, n_jobs=-1) -> None:
+        """
+        Transformer initialization
+        :param n_jobs: number of threads to use (-1 = all available)
+        """
         self.n_jobs = n_jobs
 
-    def fit(self, X, y=None):
+    def fit(self, X):
+        """
+        Fit function of transformer
+        :param X: Dataframe for transformer's fit
+        """
         return self
 
-    def transform(self, X):
+    def transform(self, X) -> pd.DataFrame:
+        """
+        Transform function of transformer
+        :param X: Dataframe to transform
+        :return: transformed DataFrame
+        """
         X_copy = X.copy()
         X_copy = parallelize_dataframe(X_copy, extract_features, self.n_jobs)
         
         return X_copy
     
     
-def extract_features(df):
+def extract_features(df) -> pd.DataFrame:
+    """
+    Function extract features from browser's fingerprint and age from DOB
+    :param df: Dataframe to apply function
+    :return: Dataframe with original and extracted features (source columns of extracted features are dropped)
+    """
     # Extract features from UserBrowser
     df = pd.concat([df, df.UserBrowser.apply(browser_extractor)], axis=1)
     df.drop(columns=['UserBrowser'], inplace=True)
@@ -32,9 +50,16 @@ def extract_features(df):
     df.drop(columns=['D02'], inplace=True)
 
     return df
-    
-    
-def parallelize_dataframe(df, func, n_jobs=-1):
+
+
+def parallelize_dataframe(df, func, n_jobs=-1) -> pd.DataFrame:
+    """
+    Function to parallelize mapping function to Dataframe
+    :param df: Dataframe to apply function
+    :param func: function to apply
+    :param n_jobs: number of threads used for processing (-1 = all available)
+    :return: transformed DataFrame
+    """
     # Get number of available cores
     cores = mp.cpu_count()
 
@@ -58,8 +83,14 @@ def parallelize_dataframe(df, func, n_jobs=-1):
     pool.join()
     
     return df
-    
-def browser_extractor(browser_fingerprint):
+
+
+def browser_extractor(browser_fingerprint) -> pd.Series:
+    """
+    Function to extract browser name, version and device type from browser's fingerprint
+    :param browser_fingerprint: fingerprint of browser
+    :return: Series with extracted features
+    """
     browser_info = browser_fingerprint.split(' ')[:3]
     
     if len(browser_info) == 3:
